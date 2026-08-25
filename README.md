@@ -8,7 +8,7 @@ Sistema para la gestión y cartelera de cine desarrollado en equipo.
 * Farfan Jose
 * 
 ## Tecnologías utilizadas
-* C#
+* C
   
 ## Cómo ejecutar el proyecto
 1. Clonar el repositorio:
