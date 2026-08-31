@@ -1,4 +1,6 @@
 #include <stdio.h>
+// futura libreria del proyecto
+#include <stdio.h>
 #include <stdlib.h>  // Necesario para system()
 #include <ctype.h>   // Para evaluar cadenas
 #include <stdbool.h> // Para usar el tipo de dato bool
@@ -198,3 +200,4 @@ void PantallaDeEspera()
     sleep(2);
     limpiarPantalla();
 }
+//  A RELLENAR
