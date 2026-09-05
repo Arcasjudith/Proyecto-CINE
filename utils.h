@@ -21,8 +21,6 @@ float calcularPromedio(float sumaTotal, int cantidadElementos);
 float aplicarPorcentaje(float valorTotal, float porcentaje);
 float calcularPorcentaje(int cantidad, int cantidadTotal);
 void limpiarPantalla();
-bool esPar(int numero);
-bool esVocal(char letra);
 void imprimirSeparador();
 char aMayuscula(char letra);
 void imprimirCaracteres(char caracter, int cantidad);
@@ -35,7 +33,7 @@ int obtenerResto(int dividendo, int divisor);
 int cantidadDivisores(int numero);
 bool esPerfecto(int numero);
 void LimpiarBuffer();
-void PantallaDeEspera();
+void PantallaDeEspera(cadena );
 
 /////////////////////////  IMPLEMENTACIONES  //////////////////////////////
 
@@ -195,9 +193,10 @@ void LimpiarBuffer()
         ;
 }
 
-void PantallaDeEspera()
+void PantallaDeEspera(cadena mensaje)
 {
+    printf(" %s:", mensaje);
     sleep(2);
     limpiarPantalla();
 }
-//  A RELLENAR
+//  A RELLENARvoid imprimirSeparador();
