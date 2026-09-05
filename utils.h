@@ -196,7 +196,7 @@ void LimpiarBuffer()
 void PantallaDeEspera(cadena mensaje)
 {
     printf(" %s:", mensaje);
-    sleep(2);
+    sleep(4);
     limpiarPantalla();
 }
 //  A RELLENARvoid imprimirSeparador();
