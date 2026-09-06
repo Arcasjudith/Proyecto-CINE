@@ -34,6 +34,7 @@ int cantidadDivisores(int numero);
 bool esPerfecto(int numero);
 void LimpiarBuffer();
 void PantallaDeEspera(cadena );
+void MostrarHorarioFormateado(int horario);
 
 /////////////////////////  IMPLEMENTACIONES  //////////////////////////////
 
@@ -199,4 +200,12 @@ void PantallaDeEspera(cadena mensaje)
     sleep(4);
     limpiarPantalla();
 }
+
+void MostrarHorarioFormateado(int horario)
+{
+    int horas = horario / 100;
+    int minutos = horario % 100;
+    printf("Horario: %02d:%02d hs", horas, minutos);
+}
+
 //  A RELLENARvoid imprimirSeparador();
