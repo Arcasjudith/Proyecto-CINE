@@ -36,6 +36,10 @@ void LimpiarBuffer();
 void PantallaDeEspera(cadena );
 void MostrarHorarioFormateado(int horario);
 
+// --- Nuevos Prototipos Reutilizables ---
+void leerCadena(cadena mensaje, cadena destino, int longitudMaxima);
+void pausar();
+
 /////////////////////////  IMPLEMENTACIONES  //////////////////////////////
 
 int leerEntero(cadena mensaje)
@@ -207,5 +211,23 @@ void MostrarHorarioFormateado(int horario)
     int minutos = horario % 100;
     printf("Horario: %02d:%02d hs", horas, minutos);
 }
+void imprimirSeparador()
+{
+    printf("\n=======================================================\n");
+}
 
-//  A RELLENARvoid imprimirSeparador();
+// Envuelve fgets y strcspn para capturar cadenas con espacios y sin saltos de línea basura
+void leerCadena(cadena mensaje, cadena destino, int longitudMaxima)
+{
+    printf("%s", mensaje);
+    LimpiarBuffer();
+    fgets(destino, longitudMaxima, stdin);
+    destino[strcspn(destino, "\n")] = '\0';
+}
+
+// Reemplaza los múltiples printfs y LimpiarBuffer manuales al terminar pantallas
+void pausar()
+{
+    printf("\nPresione ENTER para continuar...");
+    LimpiarBuffer();
+}

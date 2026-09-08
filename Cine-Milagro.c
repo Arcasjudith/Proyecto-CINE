@@ -10,9 +10,11 @@
 #define MAX_PELICULAS 100
 #define MAX_NOMBRE 60
 #define MAX_GENERO 30
-
+//Agus
 #define FILAS 5
 #define COLUMNAS 10
+#define BOLETO_MIN 0
+#define BOLETO_MAX 50
 
 void bienvenidos();
 void mostrarDespedida();
@@ -46,16 +48,23 @@ void MostrarMenuModificar(char *titulo, char *genero, int duracion, int horario)
 int BuscarIndicePelicula(char titulos[][MAX_NOMBRE], bool activos[], int total_peliculas, char *titulo_buscar);
 void opcioninvalida();
 
-void Tablero_Asientos(int fila, int columna, char Tablero[FILAS][COLUMNAS], char Tablero_visible[FILAS][COLUMNAS]);
-bool Asignacion_Asientos(int fila, int columna, char Tablero[FILAS][COLUMNAS], char Tablero_visible[FILAS][COLUMNAS]);
-void Mostar_Asientos(int fila, int columna, char Tablero[FILAS][COLUMNAS]);
+// Nuevos prototipos de asientos (Agus)
+void Tablero_Asientos_Agus(int lugares[][COLUMNAS]);
+void Mostrar_Tablero_ASientos(int *lugares, int Indice1, int indice2);
+void ASignacion_Asientos(int *lugares);
+int contarAsientosDisponibles(int *lugares);
 
+// Variables Globales Originales
 char titulos_global[MAX_PELICULAS][MAX_NOMBRE];
 int duraciones_global[MAX_PELICULAS];
 char generos_global[MAX_PELICULAS][MAX_GENERO];
 int horarios_global[MAX_PELICULAS];
 bool activos_global[MAX_PELICULAS];
 int total_peliculas_global = 0;
+
+// Variables Globales Nuevas (Asientos por película)
+int asientos_global[MAX_PELICULAS][FILAS][COLUMNAS];
+bool asientos_inicializados = false;
 
 int main()
 {
@@ -237,106 +246,153 @@ void modificardatos()
     ModificarPelicula(titulos_global, duraciones_global, generos_global, horarios_global, activos_global, total_peliculas_global);
 }
 
+// =========================================================================
+// NUEVA FUNCION COMPRA BUTACAS (Integracion)
+// =========================================================================
 void comprabutacas()
 {
-    int filaseleccionada;
-    int columnaseleccionada;
-    char Letra = 'A';
-    char Tablero[FILAS][COLUMNAS];
-    char Tablero_visible[FILAS][COLUMNAS];
-    bool Proceso_Seleccion = true;
-    bool asientoAsignadoCorrectamente = false;
-
-    printf("\t================================\n");
-    printf("\t          ASIENTOS\n");
-    printf("\t================================\n");
-    printf("Tablero: %dx%d\n", FILAS, COLUMNAS);
-    printf("| 'o' => asiento libre || 'x' => Asiento ocupado |\n\n");
-
-    Tablero_Asientos(FILAS, COLUMNAS, Tablero, Tablero_visible);
-    Mostar_Asientos(FILAS, COLUMNAS, Tablero_visible);
-
-    while (Proceso_Seleccion)
-    {
-        while (!asientoAsignadoCorrectamente)
-        {
-            filaseleccionada = leerEntero("Ingrese una fila (1-5)") - 1;
-            printf("Ingrese una columna [A-Z]: ");
-            scanf(" %c", &Letra);
-            Letra = toupper(Letra);
-            columnaseleccionada = Letra - 'A';
-
-            asientoAsignadoCorrectamente = Asignacion_Asientos(filaseleccionada, columnaseleccionada, Tablero, Tablero_visible);
-            Mostar_Asientos(FILAS, COLUMNAS, Tablero_visible);
+    // 1. Inicializar todas las matrices de asientos en el primer uso
+    if (!asientos_inicializados) {
+        for (int i = 0; i < MAX_PELICULAS; i++) {
+            Tablero_Asientos_Agus(asientos_global[i]);
         }
-        Proceso_Seleccion = false;
+        asientos_inicializados = true;
     }
-    Mostar_Asientos(FILAS, COLUMNAS, Tablero_visible);
-    printf("\nPresione una tecla para continuar...");
-    LimpiarBuffer();
+
+    int id_seleccionado = -1;
+    bool sistema_activo = true;
+
+    while (sistema_activo) {
+        limpiarPantalla();
+        printf("\n=================================================================\n");
+        printf("                CARTELERA ACTUAL - COMPRA DE BUTACAS\n");
+        printf("=================================================================\n");
+        printf("%-5s %-20s %-15s %-10s %-10s\n", "ID", "Titulo", "Genero", "Duracion", "Horario");
+        printf("-----------------------------------------------------------------\n");
+        
+        int peliculas_activas = 0;
+        for (int i = 0; i < total_peliculas_global; i++)
+        {
+            if (activos_global[i])
+            {
+                int horas = horarios_global[i] / 100;
+                int minutos = horarios_global[i] % 100;
+                int horas_d = duraciones_global[i] / 60;
+                int minutos_d = duraciones_global[i] % 60;
+                // Listado con ID para seleccion
+                printf("[%d]   %-20s %-15s %dh %02dm     %02d:%02d hs\n",
+                       i + 1, titulos_global[i], generos_global[i], horas_d, minutos_d, horas, minutos);
+                peliculas_activas++;
+            }
+        }
+
+        if (peliculas_activas == 0) {
+            printf("\nNo hay peliculas disponibles en este momento.\n");
+            printf("\nPresione una tecla para continuar...\n");
+            LimpiarBuffer();
+            sistema_activo = false; 
+        } 
+        else {
+            id_seleccionado = leerEnteroEntre(0, total_peliculas_global, "\nIngrese el ID de la pelicula (0 para salir): ");
+
+            if (id_seleccionado == 0) {
+                sistema_activo = false;
+            } 
+            else {
+                int index_peli = id_seleccionado - 1;
+
+                if (!activos_global[index_peli]) {
+                    printf("\nError: Pelicula no activa o ID invalido.\n");
+                    LimpiarBuffer();
+                } 
+                else {
+                    int Can_Asientos = 1;
+                    while (Can_Asientos != 0)
+                    {
+                        limpiarPantalla();
+                        printf("\t================================================\n");
+                        printf("\t         ASIENTOS - %s\n", titulos_global[index_peli]);
+                        printf("\t================================================\n");
+                        printf("| Ingrese |0| para salir || '0' => Asiento ocupado |\n\n");
+                        
+                        printf("Cantidad de asientos Libres => |%d|\n", contarAsientosDisponibles((int *)asientos_global[index_peli]));
+                        Mostrar_Tablero_ASientos((int *)asientos_global[index_peli], FILAS, COLUMNAS);
+                        
+                        Can_Asientos = leerEnteroEntre(BOLETO_MIN, BOLETO_MAX, "\nIngrese la cantidad de asientos a comprar (0 para volver a la cartelera): ");
+                        
+                        for (int i = 0; i < Can_Asientos; i++)
+                        {
+                            limpiarPantalla();
+                            printf("\nComprando entrada %d de %d...\n\n", i + 1, Can_Asientos);
+                            Mostrar_Tablero_ASientos((int *)asientos_global[index_peli], FILAS, COLUMNAS);
+                            ASignacion_Asientos((int *)asientos_global[index_peli]);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
-void Tablero_Asientos(int fila, int columna, char Tablero[FILAS][COLUMNAS], char Tablero_visible[FILAS][COLUMNAS])
+
+// =========================================================================
+// NUEVAS FUNCIONES DE ASIENTOS Y TABLERO
+// =========================================================================
+
+void Tablero_Asientos_Agus(int lugares[][COLUMNAS])
 {
-    int i, j;
-    for (i = 0; i < fila; i++)
+    for (int i = 0; i < FILAS; i++)
     {
-        for (j = 0; j < columna; j++)
+        for (int j = 0; j < COLUMNAS; j++)
         {
-            Tablero[i][j] = 'x';
-            Tablero_visible[i][j] = 'o';
+            lugares[i][j] = (i * COLUMNAS) + j + 1;
         }
     }
 }
 
-bool Asignacion_Asientos(int fila, int columna, char Tablero[FILAS][COLUMNAS], char Tablero_visible[FILAS][COLUMNAS])
+void Mostrar_Tablero_ASientos(int *lugares, int Indice1, int indice2)
 {
-    int contador_Asientos = 0;
-
-    if ((fila >= 0 && fila < FILAS) && (columna >= 0 && columna < COLUMNAS))
+    for (int i = 0; i < Indice1; i++)
     {
-        if (Tablero_visible[fila][columna] == 'o')
+        for (int j = 0; j < indice2; j++)
         {
-            Tablero_visible[fila][columna] = Tablero[fila][columna];
-            printf("Asiento asignado con exito\n");
-            contador_Asientos++;
-            return false;
-        }
-        else
-        {
-            printf("Asiento ocupado\n");
-            return false;
-        }
-    }
-    else
-    {
-        printf("Asiento Inexistente\n");
-        return false;
-    }
-}
-
-void Mostar_Asientos(int fila, int columna, char Tablero[FILAS][COLUMNAS])
-{
-    int i, j;
-    columna = COLUMNAS;
-
-    printf("     ");
-    for (char Abecedario = 'A'; Abecedario < ('A' + COLUMNAS); Abecedario++)
-    {
-        printf("%c  ", Abecedario);
-    }
-    printf("\n");
-
-    for (i = 0; i < fila; i++)
-    {
-        printf("%d | ", i + 1);
-        for (j = 0; j < columna; j++)
-        {
-            printf(" %c ", Tablero[i][j]);
+            printf("[%2d] ", *(lugares + (i * indice2) + j));
         }
         printf("\n");
     }
-    printf("\n");
 }
+
+void ASignacion_Asientos(int *lugares)
+{
+    int op;    
+    op = leerEnteroEntre(BOLETO_MIN, BOLETO_MAX, "Ingrese el numero de asiento: ");
+    for (int i = 0; i < FILAS; i++)
+    {
+        for (int j = 0; j < COLUMNAS; j++)
+        {
+            if (op == *(lugares + (i * COLUMNAS) + j))
+            {
+                *(lugares + (i * COLUMNAS) + j) = 0; 
+            }
+        }
+    }
+}
+
+int contarAsientosDisponibles(int *lugares) {
+    int contador = 0;
+    for (int i = 0; i < FILAS; i++) {
+        for (int j = 0; j < COLUMNAS; j++) {
+            if (*(lugares + (i * COLUMNAS) + j) != 0 ) {
+                contador++;
+            }
+        }
+    }
+    return contador;
+}
+
+
+// =========================================================================
+// FUNCIONES RESTANTES INTACTAS DEL SISTEMA ORIGINAL
+// =========================================================================
 
 void AgregarPelicula(char titulos[][MAX_NOMBRE], int duraciones[], char generos[][MAX_GENERO], int horarios[], bool activos[], int *total_peliculas)
 {
