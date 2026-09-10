@@ -1,13 +1,11 @@
 #include <stdio.h>
-// futura libreria del proyecto
-#include <stdio.h>
-#include <stdlib.h>  // Necesario para system()
-#include <ctype.h>   // Para evaluar cadenas
-#include <stdbool.h> // Para usar el tipo de dato bool
+#include <stdlib.h>
+#include <ctype.h>
+#include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
 
-typedef char cadena[150]; // Para tratar a los arrays de chars como 'cadena'
+typedef char cadena[150];
 
 ////////////////////////////  PROTOTIPOS  /////////////////////////////////
 
@@ -33,14 +31,10 @@ int obtenerResto(int dividendo, int divisor);
 int cantidadDivisores(int numero);
 bool esPerfecto(int numero);
 void LimpiarBuffer();
-void PantallaDeEspera(cadena );
+void PantallaDeEspera(cadena);
 void MostrarHorarioFormateado(int horario);
-
-// --- Nuevos Prototipos Reutilizables ---
 void leerCadena(cadena mensaje, cadena destino, int longitudMaxima);
 void pausar();
-
-/////////////////////////  IMPLEMENTACIONES  //////////////////////////////
 
 int leerEntero(cadena mensaje)
 {
@@ -131,13 +125,11 @@ bool esPar(int numero)
 }
 bool esVocal(char letra)
 {
-    letra = tolower(letra); // La pasa a minúscula temporalmente
+    letra = tolower(letra);
     return (letra == 'a' || letra == 'e' || letra == 'i' || letra == 'o' || letra == 'u');
 }
 char aMayuscula(char letra)
 {
-    // char tipo = aMayuscula(leerCaracter("Ingrese tipo (A/B/C)"));
-    // if (tipo == 'A') { ... } // ¡Solo evaluás una vez!
     return toupper(letra);
 }
 void imprimirCaracteres(char caracter, int cantidad)
@@ -190,7 +182,6 @@ int cantidadDivisores(int numero)
     }
     return contador;
 }
-// Función auxiliar para limpiar el buffer
 void LimpiarBuffer()
 {
     int c;
@@ -200,7 +191,7 @@ void LimpiarBuffer()
 
 void PantallaDeEspera(cadena mensaje)
 {
-    printf(" %s:", mensaje);
+    printf(" %s", mensaje);
     sleep(4);
     limpiarPantalla();
 }
@@ -215,8 +206,6 @@ void imprimirSeparador()
 {
     printf("\n=======================================================\n");
 }
-
-// Envuelve fgets y strcspn para capturar cadenas con espacios y sin saltos de línea basura
 void leerCadena(cadena mensaje, cadena destino, int longitudMaxima)
 {
     printf("%s", mensaje);
@@ -224,8 +213,6 @@ void leerCadena(cadena mensaje, cadena destino, int longitudMaxima)
     fgets(destino, longitudMaxima, stdin);
     destino[strcspn(destino, "\n")] = '\0';
 }
-
-// Reemplaza los múltiples printfs y LimpiarBuffer manuales al terminar pantallas
 void pausar()
 {
     printf("\nPresione ENTER para continuar...");
