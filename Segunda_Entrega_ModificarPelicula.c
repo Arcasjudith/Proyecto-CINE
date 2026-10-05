@@ -255,16 +255,16 @@ void EjecutarMenuModificar(Pelicula *pelicula, int opcion_campo)
     switch (opcion_campo)
     {
     case 1:
-        ModificarTitulo(pelicula->titulo);
+        ModificarTitulo((*pelicula).titulo);
         break;
     case 2:
-        ModificarGenero(pelicula->genero);
+        ModificarGenero((*pelicula).genero);
         break;
     case 3:
-        ModificarDuracion(&pelicula->duracion);
+        ModificarDuracion(&((*pelicula).duracion));
         break;
     case 4:
-        ModificarHorario(&pelicula->horario);
+        ModificarHorario(&((*pelicula).horario));
         break;
     case 5:
         printf("Regresando al menu principal...\n");
@@ -287,13 +287,13 @@ void ModificarGenero(char *genero)
 }
 void ModificarDuracion(Horario *duracion)
 {
-    duracion->hora = leerEntero("Nueva Duracion (Horas): ");
-    duracion->minutos = leerEnteroEntre(0, MINUTOS, "Nueva Duracion (Minutos): ");
+    (*duracion).hora = leerEntero("Nueva Duracion (Horas): ");
+    (*duracion).minutos = leerEnteroEntre(0, MINUTOS, "Nueva Duracion (Minutos): ");
     printf(">> Duracion actualizada correctamente.\n");
 }
 void ModificarHorario(Horario *horario)
 {
-    horario->hora = leerEnteroEntre(0, HORAS_DIA, "Nuevo Horario (Hora 0-23): ");
-    horario->minutos = leerEnteroEntre(0, MINUTOS, "Nuevo Horario (Minutos 0-59): ");
+    (*horario).hora = leerEnteroEntre(0, HORAS_DIA, "Nuevo Horario (Hora 0-23): ");
+    (*horario).minutos = leerEnteroEntre(0, MINUTOS, "Nuevo Horario (Minutos 0-59): ");
     printf(">> Horario actualizado correctamente.\n");
 }
