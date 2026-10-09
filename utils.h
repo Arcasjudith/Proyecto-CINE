@@ -36,6 +36,50 @@ void MostrarHorarioFormateado(int horario);
 void leerCadena(cadena mensaje, cadena destino, int longitudMaxima);
 void pausar();
 
+//Preguntar si esta bien usar esto 
+/*int leerEntero(cadena mensaje)
+{
+    int numero;
+    int validacion;
+    
+    do {
+        printf("%s: ", mensaje);
+        validacion = scanf("%d", &numero);
+        
+        if (validacion != 1) {
+            printf("Error: Entrada invalida. Por favor, ingrese un numero.\n");
+            LimpiarBuffer(); // Saca la letra o caracter erroneo del buffer
+        }
+    } while (validacion != 1);
+    
+    LimpiarBuffer(); // Limpia el '\n' residual para no afectar futuras lecturas de cadenas
+    return numero;
+}
+
+int leerEnteroEntre(int valorMin, int valorMax, cadena mensaje)
+{
+    int numero;
+    int validacion;
+    
+    do {
+        printf("%s: ", mensaje);
+        validacion = scanf("%d", &numero);
+        
+        if (validacion != 1) {
+            printf("Error: Entrada invalida. Por favor, ingrese un numero.\n");
+            LimpiarBuffer(); // Limpia la basura ingresada
+        } 
+        else if (numero < valorMin || numero > valorMax) {
+            printf("Error. El numero ingresado esta fuera de rango (%d - %d).\n", valorMin, valorMax);
+            printf("Vuelve a intentarlo.\n");
+        }
+        
+    } while (validacion != 1 || numero < valorMin || numero > valorMax);
+    
+    LimpiarBuffer(); // Limpia el '\n' residual
+    return numero;
+}*/
+
 int leerEntero(cadena mensaje)
 {
     int numero;
