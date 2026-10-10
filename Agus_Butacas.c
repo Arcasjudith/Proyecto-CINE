@@ -5,26 +5,26 @@
 #define Boleto_Max 50
 /*Aver q es esto */
 #ifdef _WIN32 // _WIN32 es la condicion del if quie decir en caso de q el sistema operativo sea windous hacer lo siguiente .
-                // ifdef  & endif son comandos especiales para el compilador , no ocupan espacio de memoria son efimeras 
+              // ifdef  & endif son comandos especiales para el compilador , no ocupan espacio de memoria son efimeras
 
-#include <windows.h>// Libreria de windous ,|HANDLE ->es un tipo de dato que fucniona como Identificador de recursos (Puntero a un elemneto interno)|
-                                          //|DWORD -> es un tipo de dato q equivalea 32 bits osea 32 espacios q pueden almacenar 1 o 0 y sirve para activar o desactivar funciones de ANSI
-                                          //|getStdHandle()-> es la forma en la se obtiene la pantalla de muestra (la temrinal)
-                                          //|STD_OUTPUT_HANDLE -> te da el identificador para q la terminaliterprete los colores en este caso RGB
-void habilitarModoANSI() // Habilita la interpretacion de colores RGB de la terminal para Windows 
+#include <windows.h>     // Libreria de windous ,|HANDLE ->es un tipo de dato que fucniona como Identificador de recursos (Puntero a un elemneto interno)|
+                         //|DWORD -> es un tipo de dato q equivalea 32 bits osea 32 espacios q pueden almacenar 1 o 0 y sirve para activar o desactivar funciones de ANSI
+                         //|getStdHandle()-> es la forma en la se obtiene la pantalla de muestra (la temrinal)
+                         //|STD_OUTPUT_HANDLE -> te da el identificador para q la terminaliterprete los colores en este caso RGB
+void habilitarModoANSI() // Habilita la interpretacion de colores RGB de la terminal para Windows
 {
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
     if (hOut != INVALID_HANDLE_VALUE)
     {
-        DWORD dwMode = 0; // Guardará la configuración actual de la consola
-        GetConsoleMode(hOut, &dwMode);//  Leemos cómo está configurada la consola ahora mismo y lo guardamos en 'dwMode'
-        dwMode |= 0x0004; // Activamos el modo "Terminal Virtual" (0x0004),Esto permite que la consola entienda códigos ANSI (para colores, mover cursor, etc.)
-        SetConsoleMode(hOut, dwMode); // Aplicaa la nueva configuración modificada a la consola
+        DWORD dwMode = 0;              // Guardará la configuración actual de la consola
+        GetConsoleMode(hOut, &dwMode); //  Leemos cómo está configurada la consola ahora mismo y lo guardamos en 'dwMode'
+        dwMode |= 0x0004;              // Activamos el modo "Terminal Virtual" (0x0004),Esto permite que la consola entienda códigos ANSI (para colores, mover cursor, etc.)
+        SetConsoleMode(hOut, dwMode);  // Aplicaa la nueva configuración modificada a la consola
     }
 }
 #endif
 //--------------------------------------------------------------
-typedef struct// Estrucutra que representa los colores en RGB 
+typedef struct // Estrucutra que representa los colores en RGB
 {
     int a;
     int b;
@@ -32,19 +32,19 @@ typedef struct// Estrucutra que representa los colores en RGB
 
 } Color;
 //--------------------------------------------------------------------------------------------------
-void Tablero_Asientos_RGB(Color *lugares, int fila, int columna);// Crea la matriz de Asientos 
+void Tablero_Asientos_RGB(Color *lugares, int fila, int columna); // Crea la matriz de Asientos
 //--------------------------------------------------------------------------------------------------
-void Mostrar_Matriz_RGB(Color *a, int fila, int columnas);// Muestra la Matriz de asientos 
+void Mostrar_Matriz_RGB(Color *a, int fila, int columnas); // Muestra la Matriz de asientos
 // ------------------------------------------------------------------------------------------------------------
-int Busqueda_Asientos();  // Realiza una busqueda (binarai/dicotomica) del asiento seleccionado por el usuario y devuelde la posicion de esa butaca / asiento.
+int Busqueda_Asientos(); // Realiza una busqueda (binarai/dicotomica) del asiento seleccionado por el usuario y devuelde la posicion de esa butaca / asiento.
 //  ------------------------------------------------------------------------------------------------------------
 int Validacion_asientos(int min, int max, cadena mensaje); // valida que el usuario no ingrese nuemros fuera de rango o caracteres de otro tipo , (letras o signos etc)
 // NUeva fucion para acortar el codigo de la funcion antes llamada Asignacion de asientos
-void Asignacion_asientos(int Posicion_Asiento, Color *lugares, int *contador);// Verifica q el asiento este ocupado en caso de estar libre le cambia el color a rojo y le resta  1 al contador de asientos .
+void Asignacion_asientos(int Posicion_Asiento, Color *lugares, int *contador); // Verifica q el asiento este ocupado en caso de estar libre le cambia el color a rojo y le resta  1 al contador de asientos .
 
 int main()
 {
-#ifdef _WIN32 
+#ifdef _WIN32
     habilitarModoANSI();
 #endif
     Color Butacas[FILAS][COLUMNAS];
@@ -72,7 +72,7 @@ int main()
         Mostrar_Matriz_RGB(&Butacas[0][0], FILAS, COLUMNAS);
         for (int i = 0; i < Can_Asientos; i++)
         {
-            
+
             Posicion_Asiento = Busqueda_Asientos();
             Asignacion_asientos(Posicion_Asiento, (Color *)Butacas, &contador_Asientos);
             limpiarPantalla();
@@ -81,6 +81,7 @@ int main()
 
         limpiarPantalla();
     }
+     printf("\t================================\n\tAGOTADO\n\t================================\n");
 
     return 0;
 }
@@ -91,42 +92,42 @@ void Tablero_Asientos_RGB(Color *lugares, int fila, int columna)
     Color amarillo_patito = {247, 231, 84};
     Color verde_tenis = {121, 240, 24};
 
-    for (int i = 0; i < fila; i++)
+    // para no utilizar ciclos anidados realizare un recorrido linea con Punteros
+    int Indice = (fila * columna);        // esta variable Indicie significa la cantidad total de elmentos de la matriz :)
+    for (int i = 0; i <= Indice - 1; i++) // el -1 paraq no salga de rango  Y EL <= Para q cuente y pinte todos los asientos
     {
-        for (int j = 0; j < columna; j++)
+        Color *aux = lugares + i; // Variable auxiliar
+        if (i < 10)
         {
-            // Variable auxiliar
-            Color *aux = lugares + (i * columna) + j;
-            if (i < 1)
-            {
-                *aux = verde_tenis;
-            }
-            else if (i < 3)
-            {
-                *aux = amarillo_patito;
-            }
-            else
-            {
-                *aux = roza_pastel;
-            }
+            *aux = verde_tenis;
+        }
+        else if (i < 30)
+        {
+            *aux = amarillo_patito;
+        }
+        else
+        {
+            *aux = roza_pastel;
         }
     }
 }
 void Mostrar_Matriz_RGB(Color *a, int filas, int columnas)
 {
 
-    for (int i = 0; i < filas; i++)
+    int Indice = (filas * columnas); // esta variable Indicie significa la cantidad total de elmentos de la matriz :)
+    for (int j = 0; j <= Indice - 1; j++)
     {
-        for (int j = 0; j < columnas; j++)
+
+        // Variable auxiliar
+        Color *aux = a + j;
+            printf("\t\033[48;2;%d;%d;%dm \033[30m|%.2d|\033[0m", aux->a, aux->b, aux->c, j + 1);
+        if ( j == 9 || j == 19 || j == 29 || j == 39 || j == 49 )
         {
-            // Variable auxiliar
-            Color *aux = a + (i * columnas) + j;
-            printf("\t\033[48;2;%d;%d;%dm \033[30m|%.2d|\033[0m", aux->a, aux->b, aux->c, ((i * columnas) + j + 1));
+            printf("|\n\n");
         }
-        printf("|");
-        printf("\n\n");
+        
+    
     }
-    printf("\n");
 }
 
 int Busqueda_Asientos()
@@ -136,7 +137,6 @@ int Busqueda_Asientos()
     int inzquierada = Boleto_MIn, Derecha = Boleto_Max - 1; // SOn ls extremos de la matriz
     int posicion_Media;                                     // seria el centro de la "matriz"
     int vandera = -1;                                       // esta variable cumple una doble funcion es una bandera q indica cuando cortar el bucle while y tambien almacena la poscion que se va a alterar;
-    
 
     op = Validacion_asientos(Boleto_MIn, Boleto_Max, "Eliga su asiento \n");
     while (inzquierada <= Derecha && vandera == -1) //  Se repite miestras el rango de  izquiera(valor minimo "0") a derecha (Valor maximo (50)) sea validao ,y no se halla encontrado la posicion
@@ -159,7 +159,7 @@ int Busqueda_Asientos()
             }
         }
     }
- return vandera;
+    return vandera;
 }
 //---------------------------------------------------------------------------------------------------------------
 void Asignacion_asientos(int Posicion_Asiento, Color *lugares, int *contador)
@@ -167,18 +167,18 @@ void Asignacion_asientos(int Posicion_Asiento, Color *lugares, int *contador)
     int pos_asiento = 0;
     Color Asiento_Reservado = {255, 0, 0};
     Color *aux = lugares + Posicion_Asiento;
-    if (aux->a == Asiento_Reservado.a && aux->b == Asiento_Reservado.b && aux->c == Asiento_Reservado.c)//Verifica si el asiento esta pintaod de color rojo o noup.
+    if (aux->a == Asiento_Reservado.a && aux->b == Asiento_Reservado.b && aux->c == Asiento_Reservado.c) // Verifica si el asiento esta pintaod de color rojo o noup.
     {
         printf("Error , el asieto seleccionado esta ocupado , Eliga otro ");
         pos_asiento = Busqueda_Asientos(lugares);
-        Asignacion_asientos( pos_asiento,  lugares, contador);
-        
+        Asignacion_asientos(pos_asiento, lugares, contador);
     }
     else
     {
         *aux = Asiento_Reservado; // una ves encontrado el valor se altera utilizando punteros ;
         (*contador)--;            // se le resta 1 al numero total de asientos disponibles;
     }
+
 }
 //------------------------------------------------------------------------------------------------------------------
 int Validacion_asientos(int min, int max, cadena mensaje)
