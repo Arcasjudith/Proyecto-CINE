@@ -382,7 +382,11 @@ void AgregarPelicula(char titulos[][MAX_NOMBRE], int duraciones[], char generos[
         scanf(" %s", generos[indice]);
         horarios[indice] = leerEnteroEntre(MIN_HORARIO, MAX_HORARIO, "Horario de funcion (Ej. 2030 para las 20:30)");
         activos[indice] = 1;
+<<<<<<< HEAD
+        //PantallaDeEspera(); 
+=======
         PantallaDeEspera("Cargando...");
+>>>>>>> 73e65adf9b2f40e4dbd55be4ace3ac8c9bbbf0ef
         printf(">> Pelicula '%s' agregada con exito!\n", titulos[indice]);
         (*total_peliculas)++;
     }
