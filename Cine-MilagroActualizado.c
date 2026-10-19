@@ -106,8 +106,6 @@ bool son_colores_iguales(Color c1, Color c2);
 bool esta_asiento_ocupado(const Color *asientos, int indice);
 void inicializar_sala(Color *asientos, int total);
 Color determinar_color_por_fila(int fila);
-int leer_entero_en_rango(int min, int max, const char *mensaje);
-void vaciar_buffer_teclado(void);
 void mostrar_ticket(Pelicula *pelicula, int asientos_sesion[], int total_comprados);
 
 int main()
@@ -515,34 +513,6 @@ void ModificarHorario(Horario *horario)
     (*horario).minutos = leerEnteroEntre(0, MINUTOS, "Nuevo Horario (Minutos 0-59): ");
     printf(">> Horario actualizado correctamente.\n");
 }
-int leer_entero_en_rango(int min, int max, const char *mensaje)
-{
-    int valor = 0;
-    bool entrada_valida = false;
-
-    do
-    {
-        printf("%s", mensaje);
-        if (scanf("%d", &valor) == 1)
-        {
-            if (valor >= min && valor <= max)
-            {
-                entrada_valida = true;
-            }
-            else
-            {
-                printf("  \033[31m[✘] Rango invalido. Ingrese un valor entre %d y %d.\033[0m\n", min, max);
-            }
-        }
-        else
-        {
-            printf("  \033[31m[✘] Entrada no valida. Debe ingresar un numero entero.\033[0m\n");
-            vaciar_buffer_teclado();
-        }
-    } while (!entrada_valida);
-
-    return valor;
-}
 
 Color determinar_color_por_fila(int fila)
 {
@@ -577,21 +547,17 @@ int buscar_indice_asiento(int numero_asiento)
     int izquierda = 0;
     int derecha = TOTAL_ASIENTOS - 1;
 
-    while (izquierda <= derecha)
+    while (izquierda <= derecha ) 
     {
         int medio = izquierda + (derecha - izquierda) / 2;
-        int asiento_actual = medio + 1; // Los asientos se enumeran de 1 a 50
+        int asiento_actual = medio + 1;
 
         if (asiento_actual == numero_asiento)
         {
-            return medio; // Retorna el índice (0 a 49)
-        }
-        else if (numero_asiento < asiento_actual)
-        {
+            return medio; // retorna el indice 
+        }else if (numero_asiento < asiento_actual){
             derecha = medio - 1;
-        }
-        else
-        {
+        }else{
             izquierda = medio + 1;
         }
     }
@@ -664,8 +630,7 @@ void reservar_asiento_interactivo(Color *asientos, int *asientos_libres)
 
     do
     {
-        int numero_deseado = leer_entero_en_rango(BOLETO_MIN, BOLETO_MAX,
-                                                  " -> Seleccione el numero de asiento a reservar: ");
+        int numero_deseado = leerEnteroEntre(BOLETO_MIN, BOLETO_MAX," > Seleccione el numero de asiento a reservar: ");
 
         indice = buscar_indice_asiento(numero_deseado);
 
@@ -679,16 +644,13 @@ void reservar_asiento_interactivo(Color *asientos, int *asientos_libres)
         }
     } while (!seleccion_exitosa);
 
-    // Asignación en memoria
     asientos[indice] = COLOR_RESERVADO;
     (*asientos_libres)--;
 }
 
 void procesar_compra(Color *asientos, int *asientos_libres, Pelicula *pelicula)
 {
-    int cantidad = leer_entero_en_rango(0, *asientos_libres,
-                                        " -> ¿Cuantas entradas desea comprar? (0 para salir): ");
-
+    int cantidad = leerEnteroEntre(0, *asientos_libres," > ¿Cuantas entradas desea comprar? (0 para salir): ");
     if (cantidad == 0)
     {
         return;
@@ -706,7 +668,7 @@ void procesar_compra(Color *asientos, int *asientos_libres, Pelicula *pelicula)
 
         do
         {
-            int numero_deseado = leer_entero_en_rango(BOLETO_MIN, BOLETO_MAX,
+            int numero_deseado = leerEnteroEntre(BOLETO_MIN, BOLETO_MAX,
                                                       " -> Seleccione el numero de asiento a reservar: ");
 
             indice = buscar_indice_asiento(numero_deseado);
@@ -804,6 +766,6 @@ void mostrar_ticket(Pelicula *pelicula, int asientos_sesion[], int total_comprad
     printf(" ¡Gracias por elegir El Milagro del Cine!\n");
     printf("==================================================\n");
     printf("\nPresione Enter para volver al menu principal...");
-    vaciar_buffer_teclado();
-    getchar();
+    LimpiarBuffer();
+    getchar();//espera a que el usuario ingrese una tecla par continuar 
 }
