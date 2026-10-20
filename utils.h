@@ -37,7 +37,7 @@ void leerCadena(cadena mensaje, cadena destino, int longitudMaxima);
 void pausar();
 
 // Preguntar si esta bien usar esto
-/*int leerEntero(cadena mensaje)
+int leerEntero(cadena mensaje)
 {
     int numero;
     int validacion;
@@ -78,15 +78,6 @@ int leerEnteroEntre(int valorMin, int valorMax, cadena mensaje)
 
     LimpiarBuffer(); // Limpia el '\n' residual
     return numero;
-}*/
-
-int leerEntero(cadena mensaje)
-{
-    int numero;
-    printf("%s: ", mensaje);
-    fflush(stdin);
-    scanf("%d", &numero);
-    return numero;
 }
 float leerFloat(cadena mensaje)
 {
@@ -105,23 +96,6 @@ char leerCaracter(cadena mensaje)
     scanf(" %c", &caracter);
     return caracter;
 }
-
-int leerEnteroEntre(int valorMin, int valorMax, cadena mensaje)
-{
-    int numero;
-    printf("%s:", mensaje);
-    scanf(" %d", &numero);
-    while (numero < valorMin || numero > valorMax)
-    {
-        printf("Error.");
-        printf("El numero ingresado esta fuera de rango.\n");
-        printf("vuelve a intentarlo.\n");
-        printf("%s:", mensaje);
-        scanf(" %d", &numero);
-    }
-    return numero;
-}
-
 float leerFloatEntre(float valorMin, float valorMax, cadena mensaje)
 {
     float numero;
@@ -253,8 +227,10 @@ void imprimirSeparador()
 void leerCadena(cadena mensaje, cadena destino, int longitudMaxima)
 {
     printf("%s", mensaje);
-    LimpiarBuffer();
     fgets(destino, longitudMaxima, stdin);
+    if (strcmp(destino, "\n") == 0) {
+        fgets(destino, longitudMaxima, stdin);
+    }
     destino[strcspn(destino, "\n")] = '\0';
 }
 void pausar()
