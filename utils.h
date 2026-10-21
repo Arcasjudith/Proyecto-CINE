@@ -38,23 +38,19 @@ void MostrarHorarioFormateado(int horario);
 void leerCadena(cadena mensaje, cadena destino, int longitudMaxima);
 void pausar();
 
-////////////////////////////  IMPLEMENTACIONES  ///////////////////////////
-
-void vaciar_buffer_teclado(void)
-{
-    LimpiarBuffer();
-}
-
+// Preguntar si esta bien usar esto
 int leerEntero(cadena mensaje)
 {
     int numero;
     int validacion;
 
-    do {
+    do
+    {
         printf("%s: ", mensaje);
         validacion = scanf("%d", &numero);
 
-        if (validacion != 1) {
+        if (validacion != 1)
+        {
             printf("Error: Entrada invalida. Por favor, ingrese un numero.\n");
             LimpiarBuffer(); // Saca la letra o caracter erroneo del buffer
         }
@@ -69,22 +65,26 @@ int leerEnteroEntre(int valorMin, int valorMax, cadena mensaje)
     int numero;
     int validacion;
 
-    do {
+    do
+    {
         printf("%s: ", mensaje);
         validacion = scanf("%d", &numero);
 
-        if (validacion != 1) {
+        if (validacion != 1)
+        {
             printf("Error: Entrada invalida. Por favor, ingrese un numero.\n");
             LimpiarBuffer(); // Limpia la basura ingresada
         }
-        else if (numero < valorMin || numero > valorMax) {
+        else if (numero < valorMin || numero > valorMax)
+        {
             printf("Error. El numero ingresado esta fuera de rango (%d a %d).\n", valorMin, valorMax);
             printf("Vuelve a intentarlo.\n");
         }
 
     } while (validacion != 1 || numero < valorMin || numero > valorMax);
 
-    LimpiarBuffer(); 
+    LimpiarBuffer(); // Limpia el '\n' residual
+
     return numero;
 }
 
@@ -133,7 +133,8 @@ bool confirmaUsuario(cadena mensaje)
 
 float calcularPromedio(float sumaTotal, int cantidadElementos)
 {
-    if (cantidadElementos == 0) return 0.0f;
+    if (cantidadElementos == 0)
+        return 0.0f;
     return sumaTotal / cantidadElementos;
 }
 
@@ -144,7 +145,8 @@ float aplicarPorcentaje(float valorTotal, float porcentaje)
 
 float calcularPorcentaje(int cantidad, int cantidadTotal)
 {
-    if (cantidadTotal == 0) return 0.0f;
+    if (cantidadTotal == 0)
+        return 0.0f;
     float porcentaje = ((float)cantidad / cantidadTotal) * 100.0f;
     return porcentaje;
 }
@@ -209,17 +211,20 @@ int generarAleatorio(int min, int max)
 
 bool esPrimo(int numero)
 {
-    if (numero <= 1) return false;
+    if (numero <= 1)
+        return false;
     for (int i = 2; i * i <= numero; i++)
     {
-        if (numero % i == 0) return false;
+        if (numero % i == 0)
+            return false;
     }
     return true;
 }
 
 bool esMultiplo(int numero, int divisor)
 {
-    if (divisor == 0) return false;
+    if (divisor == 0)
+        return false;
     return (numero % divisor == 0);
 }
 
@@ -243,11 +248,13 @@ int cantidadDivisores(int numero)
 
 bool esPerfecto(int numero)
 {
-    if (numero <= 0) return false;
+    if (numero <= 0)
+        return false;
     int suma = 0;
     for (int i = 1; i <= numero / 2; i++)
     {
-        if (numero % i == 0) suma += i;
+        if (numero % i == 0)
+            suma += i;
     }
     return suma == numero;
 }
@@ -282,7 +289,8 @@ void leerCadena(cadena mensaje, cadena destino, int longitudMaxima)
 {
     printf("%s", mensaje);
     fgets(destino, longitudMaxima, stdin);
-    if (strcmp(destino, "\n") == 0) {
+    if (strcmp(destino, "\n") == 0)
+    {
         fgets(destino, longitudMaxima, stdin);
     }
     destino[strcspn(destino, "\n")] = '\0';
