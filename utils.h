@@ -8,7 +8,7 @@
 typedef char cadena[150];
 
 ////////////////////////////  PROTOTIPOS  /////////////////////////////////
-
+void vaciar_buffer_teclado(void);
 int leerEntero(cadena mensaje);
 float leerFloat(cadena mensaje);
 char leerCaracter(cadena mensaje);
@@ -19,6 +19,8 @@ float calcularPromedio(float sumaTotal, int cantidadElementos);
 float aplicarPorcentaje(float valorTotal, float porcentaje);
 float calcularPorcentaje(int cantidad, int cantidadTotal);
 void limpiarPantalla();
+bool esPar(int numero);
+bool esVocal(char letra);
 void imprimirSeparador();
 char aMayuscula(char letra);
 void imprimirCaracteres(char caracter, int cantidad);
@@ -31,13 +33,19 @@ int obtenerResto(int dividendo, int divisor);
 int cantidadDivisores(int numero);
 bool esPerfecto(int numero);
 void LimpiarBuffer();
-void PantallaDeEspera(cadena);
+void PantallaDeEspera(cadena mensaje);
 void MostrarHorarioFormateado(int horario);
 void leerCadena(cadena mensaje, cadena destino, int longitudMaxima);
 void pausar();
 
-// Preguntar si esta bien usar esto
-/*int leerEntero(cadena mensaje)
+////////////////////////////  IMPLEMENTACIONES  ///////////////////////////
+
+void vaciar_buffer_teclado(void)
+{
+    LimpiarBuffer();
+}
+
+int leerEntero(cadena mensaje)
 {
     int numero;
     int validacion;
@@ -70,24 +78,16 @@ int leerEnteroEntre(int valorMin, int valorMax, cadena mensaje)
             LimpiarBuffer(); // Limpia la basura ingresada
         }
         else if (numero < valorMin || numero > valorMax) {
-            printf("Error. El numero ingresado esta fuera de rango (%d - %d).\n", valorMin, valorMax);
+            printf("Error. El numero ingresado esta fuera de rango (%d a %d).\n", valorMin, valorMax);
             printf("Vuelve a intentarlo.\n");
         }
 
     } while (validacion != 1 || numero < valorMin || numero > valorMax);
 
-    LimpiarBuffer(); // Limpia el '\n' residual
-    return numero;
-}*/
-
-int leerEntero(cadena mensaje)
-{
-    int numero;
-    printf("%s: ", mensaje);
-    fflush(stdin);
-    scanf("%d", &numero);
+    LimpiarBuffer(); 
     return numero;
 }
+
 float leerFloat(cadena mensaje)
 {
     float numero;
@@ -104,22 +104,6 @@ char leerCaracter(cadena mensaje)
     fflush(stdin);
     scanf(" %c", &caracter);
     return caracter;
-}
-
-int leerEnteroEntre(int valorMin, int valorMax, cadena mensaje)
-{
-    int numero;
-    printf("%s:", mensaje);
-    scanf(" %d", &numero);
-    while (numero < valorMin || numero > valorMax)
-    {
-        printf("Error.");
-        printf("El numero ingresado esta fuera de rango.\n");
-        printf("vuelve a intentarlo.\n");
-        printf("%s:", mensaje);
-        scanf(" %d", &numero);
-    }
-    return numero;
 }
 
 float leerFloatEntre(float valorMin, float valorMax, cadena mensaje)
@@ -146,36 +130,46 @@ bool confirmaUsuario(cadena mensaje)
     scanf(" %c", &opcion);
     return opcion == 'S' || opcion == 's';
 }
+
 float calcularPromedio(float sumaTotal, int cantidadElementos)
 {
+    if (cantidadElementos == 0) return 0.0f;
     return sumaTotal / cantidadElementos;
 }
+
 float aplicarPorcentaje(float valorTotal, float porcentaje)
 {
-    return (valorTotal * porcentaje) / 100.0;
+    return (valorTotal * porcentaje) / 100.0f;
 }
+
 float calcularPorcentaje(int cantidad, int cantidadTotal)
 {
-    float porcentaje = (cantidad / cantidadTotal) * 100;
+    if (cantidadTotal == 0) return 0.0f;
+    float porcentaje = ((float)cantidad / cantidadTotal) * 100.0f;
     return porcentaje;
 }
+
 void limpiarPantalla()
 {
     system("cls");
 }
+
 bool esPar(int numero)
 {
     return (numero % 2 == 0);
 }
+
 bool esVocal(char letra)
 {
     letra = tolower(letra);
     return (letra == 'a' || letra == 'e' || letra == 'i' || letra == 'o' || letra == 'u');
 }
+
 char aMayuscula(char letra)
 {
     return toupper(letra);
 }
+
 void imprimirCaracteres(char caracter, int cantidad)
 {
     for (int i = 0; i < cantidad; i++)
@@ -183,6 +177,7 @@ void imprimirCaracteres(char caracter, int cantidad)
         printf("%c", caracter);
     }
 }
+
 int obtenerMayor(int num1, int num2)
 {
     int mayor;
@@ -206,14 +201,33 @@ int obtenerMenor(int num1, int num2)
         menor = num2;
     return menor;
 }
+
 int generarAleatorio(int min, int max)
 {
     return rand() % (max - min + 1) + min;
 }
+
+bool esPrimo(int numero)
+{
+    if (numero <= 1) return false;
+    for (int i = 2; i * i <= numero; i++)
+    {
+        if (numero % i == 0) return false;
+    }
+    return true;
+}
+
+bool esMultiplo(int numero, int divisor)
+{
+    if (divisor == 0) return false;
+    return (numero % divisor == 0);
+}
+
 int obtenerResto(int dividendo, int divisor)
 {
     return dividendo % divisor;
 }
+
 int cantidadDivisores(int numero)
 {
     int contador = 0;
@@ -226,6 +240,18 @@ int cantidadDivisores(int numero)
     }
     return contador;
 }
+
+bool esPerfecto(int numero)
+{
+    if (numero <= 0) return false;
+    int suma = 0;
+    for (int i = 1; i <= numero / 2; i++)
+    {
+        if (numero % i == 0) suma += i;
+    }
+    return suma == numero;
+}
+
 void LimpiarBuffer()
 {
     int c;
@@ -246,17 +272,22 @@ void MostrarHorarioFormateado(int horario)
     int minutos = horario % 100;
     printf("Horario: %02d:%02d hs", horas, minutos);
 }
+
 void imprimirSeparador()
 {
     printf("\n=======================================================\n");
 }
+
 void leerCadena(cadena mensaje, cadena destino, int longitudMaxima)
 {
     printf("%s", mensaje);
-    LimpiarBuffer();
     fgets(destino, longitudMaxima, stdin);
+    if (strcmp(destino, "\n") == 0) {
+        fgets(destino, longitudMaxima, stdin);
+    }
     destino[strcspn(destino, "\n")] = '\0';
 }
+
 void pausar()
 {
     printf("\nPresione ENTER para continuar...");
