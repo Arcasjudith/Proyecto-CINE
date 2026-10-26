@@ -4,9 +4,10 @@
 #define UNO 1
 #define OCULTO 88
 #define CLAVE_ADMIN 1234
-#define SALIDA 4
+#define OPSALIDA 3
 #define MAX_PELICULAS 100
 #define MAX_NOMBRE 60
+#define SALIDAADMI 4
 #define MAX_GENERO 50
 #define MINUTOS 60
 #define HORAS_DIA 24
@@ -58,7 +59,7 @@ typedef struct
 } Color;
 typedef struct
 {
-    int id;
+
     char titulo[MAX_NOMBRE];
     Horario duracion;
     char genero[MAX_GENERO];
@@ -68,19 +69,16 @@ typedef struct
     int asientos_libres;
 } Pelicula;
 
-// Definicio de colores
 static const Color COLOR_RESERVADO = {220, 20, 60}; // Rojo carmesí
 static const Color COLOR_PREMIUM = {46, 204, 113};  // Verde esmeralda (Fila 1)
 static const Color COLOR_MEDIA = {241, 196, 15};    // Amarillo dorado (Filas 2-3)
 static const Color COLOR_GENERAL = {52, 152, 219};  // Azul claro (Filas 4-5)
 
-// Funciones de menu
 void bienvenidos();
 void mostrarDespedida();
 void primermenu();
 int solicitarOpcionPrincipal(Pelicula catalogo[], int total_peliculas);
 
-// Estructura principal
 void iniciarSistema(Pelicula catalogo[], int total_peliculas);
 void procesarOpcionPrincipal(int op, Pelicula catalogo[], int *total_peliculas);
 void gestionarAccesoAdmin(Pelicula catalogo[], int *total_peliculas);
@@ -88,7 +86,6 @@ void ejecutarAdmin(Pelicula catalogo[], int *total_peliculas);
 void menuadministrador();
 int verifiadmi();
 
-// Funcionamiento
 Pelicula AgregarPelicula(int total_peliculas);
 void EliminarPelicula(Pelicula catalogo[], int total_peliculas);
 void listarPeliculas(Pelicula catalogo[], int total_peliculas);
@@ -107,7 +104,6 @@ void ModificarHorario(Horario *horario);
 void opcioninvalida();
 void listarPeliculasPrincipio(Pelicula catalogo[], int total_peliculas);
 
-// Compra y funciones para matris de color
 void comprarEntradas(Pelicula catalogo[], int total_peliculas);
 void procesar_compra(Color *asientos, int *asientos_libres, Pelicula *pelicula);
 void reservar_asiento_interactivo(Color *asientos, int *asientos_libres);
@@ -124,21 +120,20 @@ void mostrar_ticket(Pelicula *pelicula, int asientos_sesion[], int total_comprad
 void leerHorarioFormato(cadena mensaje, int *hora, int *minutos);
 float calcular_precio_asiento(int numero_asiento);
 
-// Funciones de pruebas
+int ObtenerIndiceReal(Pelicula catalogo[], int total_peliculas, int opcion_visual);
+
 void cargarDatosPrueba(Pelicula catalogo[], int *total_peliculas);
-int BuscarIndicePeliculaPorID(Pelicula catalogo[], int total_peliculas, int id_buscar);
 
 int main()
 {
-    // pelis
+
     int total_peliculas = 0;
     Pelicula catalogo[MAX_PELICULAS];
 
     bienvenidos();
-    // matriz
+
     habilitarModoANSI();
-    // CARGAMOS LOS DATOS DE PRUEBA AQUÍ
-    cargarDatosPrueba(catalogo, &total_peliculas); // sacar y poner un archivo txt
+    cargarDatosPrueba(catalogo, &total_peliculas);
 
     iniciarSistema(catalogo, total_peliculas);
     mostrarDespedida();
@@ -170,7 +165,7 @@ void leerHorarioFormato(cadena mensaje, int *hora, int *minutos)
 void iniciarSistema(Pelicula catalogo[], int total_peliculas)
 {
     int op = 0;
-    while (op != SALIDA)
+    while (op != OPSALIDA)
     {
         op = solicitarOpcionPrincipal(catalogo, total_peliculas);
 
@@ -259,7 +254,7 @@ void ejecutarAdmin(Pelicula catalogo[], int *total_peliculas)
 {
     int opadmin = 0;
 
-    while (opadmin != SALIDA)
+    while (opadmin != SALIDAADMI)
     {
         menuadministrador();
         opadmin = leerEntero("Seleccione una opcion: ");
@@ -327,7 +322,6 @@ Pelicula AgregarPelicula(int total_pelicula)
     leerCadena("Genero: ", catalogo.genero, MAX_GENERO);
     leerHorarioFormato("Hora de la funcion (HH/MM): ", &catalogo.horario.hora, &catalogo.horario.minutos);
     catalogo.activo = true;
-    catalogo.id = total_pelicula + 1;
 
     inicializar_sala(catalogo.asientos, TOTAL_ASIENTOS);
     catalogo.asientos_libres = TOTAL_ASIENTOS;
@@ -335,12 +329,8 @@ Pelicula AgregarPelicula(int total_pelicula)
     printf(" > Pelicula '%s' agregada con exito!\n", catalogo.titulo);
     return catalogo;
 }
-
 void EliminarPelicula(Pelicula catalogo[], int total_peliculas)
 {
-    char titulo_buscar[MAX_NOMBRE];
-    bool encontrada = false;
-
     printf("\n ELIMINAR PELICULA \n");
     if (total_peliculas == 0)
     {
@@ -348,18 +338,20 @@ void EliminarPelicula(Pelicula catalogo[], int total_peliculas)
     }
     else
     {
-        leerCadena("Ingrese el titulo de la pelicula que desea eliminar: ", titulo_buscar, MAX_NOMBRE);
-        for (int i = 0; i < total_peliculas; i++)
+        int activas = MostrarPeliculasActivas(catalogo, total_peliculas);
+        if (activas > 0)
         {
-            if (strcmp(catalogo[i].titulo, titulo_buscar) == 0 && catalogo[i].activo)
+            int buscar = leerEnteroEntre(0, activas, "Ingrese el numero de la pelicula a eliminar (0 para cancelar): ");
+            if (buscar != 0)
             {
-                catalogo[i].activo = false;
-                encontrada = true;
-                printf(" > La pelicula '%s' cambio su estado a 'No disponible'.\n", catalogo[i].titulo);
+                int indice = ObtenerIndiceReal(catalogo, total_peliculas, buscar);
+                if (indice != -1)
+                {
+                    catalogo[indice].activo = false;
+                    printf(" > La pelicula '%s' cambio su estado a 'No disponible'.\n", catalogo[indice].titulo);
+                }
             }
         }
-        if (!encontrada)
-            printf("Error: No se encontro la pelicula o ya estaba 'No disponible'.\n");
     }
 }
 
@@ -394,7 +386,7 @@ void ModificarPelicula(Pelicula catalogo[], int *total_peliculas)
 {
     int opcion_campo;
     int indice;
-    int id;
+    int opcion_visual;
 
     if (*total_peliculas == 0)
     {
@@ -403,23 +395,26 @@ void ModificarPelicula(Pelicula catalogo[], int *total_peliculas)
     else
     {
         MostrarEncabezado("MODIFICAR PELICULA");
-        MostrarPeliculasActivas(catalogo, *total_peliculas);
+        int activas = MostrarPeliculasActivas(catalogo, *total_peliculas);
 
-        id = leerEntero("Ingrese el ID de la pelicula que desea modificar: ");
-        indice = BuscarIndicePeliculaPorID(catalogo, *total_peliculas, id);
+        if (activas > 0)
+        {
+            opcion_visual = leerEnteroEntre(1, activas, "Ingrese el numero de la pelicula que desea modificar: ");
+            indice = ObtenerIndiceReal(catalogo, *total_peliculas, opcion_visual);
 
-        if (indice == -1)
-        {
-            printf("Error: No se encontro ninguna pelicula activa con el ID ingresado .\n");
-        }
-        else
-        {
-            do
+            if (indice == -1)
             {
-                MostrarMenuModificar(catalogo, indice);
-                opcion_campo = leerEnteroEntre(UNO, FILAS, "Seleccione una opcion: ");
-                EjecutarMenuModificar(&catalogo[indice], opcion_campo);
-            } while (opcion_campo != FILAS);
+                printf("Error: No se encontro ninguna pelicula.\n");
+            }
+            else
+            {
+                do
+                {
+                    MostrarMenuModificar(catalogo, indice);
+                    opcion_campo = leerEnteroEntre(UNO, FILAS, "Seleccione una opcion: ");
+                    EjecutarMenuModificar(&catalogo[indice], opcion_campo);
+                } while (opcion_campo != FILAS);
+            }
         }
     }
 }
@@ -432,8 +427,6 @@ void MostrarEncabezado(cadena mensaje)
     printf("\t%-40s %-20s %-10s %-10s\n", "Titulo", "Genero", "Duracion", "Horario");
     printf("-------------------------------------------------------\n");
 }
-
-// VEr que onda con el int
 int MostrarPeliculasActivas(Pelicula catalogo[], int total_peliculas)
 {
     int peliculas_activas = 0;
@@ -442,15 +435,15 @@ int MostrarPeliculasActivas(Pelicula catalogo[], int total_peliculas)
     {
         if (catalogo[i].activo)
         {
+            peliculas_activas++;
             printf("[ %d ] %-40s %-25s %dh %02dm     %02d:%02d hs\n",
-                   catalogo[i].id,
+                   peliculas_activas,
                    catalogo[i].titulo,
                    catalogo[i].genero,
                    catalogo[i].duracion.hora,
                    catalogo[i].duracion.minutos,
                    catalogo[i].horario.hora,
                    catalogo[i].horario.minutos);
-            peliculas_activas++;
         }
     }
     return peliculas_activas;
@@ -527,7 +520,7 @@ void ModificarGenero(char *genero)
 
 void ModificarDuracion(Horario *duracion)
 {
-    (*duracion).hora = leerEntero("Nueva Duracion (Horas): ");
+    (*duracion).hora = leerEnteroEntre(MIN_HORA_PELICULA, MAX_HORA_PELICULA, "Nueva Duracion (Horas): ");
     (*duracion).minutos = leerEnteroEntre(0, MINUTOS, "Nueva Duracion (Minutos): ");
     printf(">> Duracion actualizada correctamente.\n");
 }
@@ -585,11 +578,11 @@ int buscar_indice_asiento(int numero_asiento)
     while (izquierda <= derecha && indice == -1)
     {
         int medio = izquierda + (derecha - izquierda) / 2;
-        int asiento_actual = medio + 1; // Los asientos se enumeran de 1 a 50
+        int asiento_actual = medio + 1;
 
         if (asiento_actual == numero_asiento)
         {
-            indice = medio; // Retorna el índice (0 a 49)
+            indice = medio;
         }
         else if (numero_asiento < asiento_actual)
         {
@@ -704,13 +697,12 @@ void procesar_compra(Color *asientos, int *asientos_libres, Pelicula *pelicula)
                 else if (indice != -1)
                 {
                     seleccion_exitosa = true;
-                    // Guardamos el número de asiento para el ticket
+
                     asientos_sesion[contador_sesion++] = numero_deseado;
                     total_pagar += calcular_precio_asiento(numero_deseado);
                 }
             } while (!seleccion_exitosa);
 
-            // Asignación en memoria
             asientos[indice] = COLOR_RESERVADO;
             (*asientos_libres)--;
 
@@ -718,7 +710,6 @@ void procesar_compra(Color *asientos, int *asientos_libres, Pelicula *pelicula)
             printf("  \033[32m[✔] Asiento asignado. Subtotal acumulado: $%.2f\033[0m\n\n", total_pagar);
         }
 
-        // Preguntar si desea finalizar la compra
         if (confirmaUsuario("¿Desea finalizar la compra y emitir el ticket?"))
         {
             mostrar_ticket(pelicula, asientos_sesion, contador_sesion, total_pagar);
@@ -730,11 +721,8 @@ void procesar_compra(Color *asientos, int *asientos_libres, Pelicula *pelicula)
         }
     }
 }
-
 void comprarEntradas(Pelicula catalogo[], int total_peliculas)
 {
-    int indices_activos[MAX_PELICULAS];
-    int peliculas_activas = 0;
     if (total_peliculas == 0)
     {
         printf("El catalogo esta vacio. No hay peliculas para comprar.\n");
@@ -742,23 +730,24 @@ void comprarEntradas(Pelicula catalogo[], int total_peliculas)
     else
     {
         MostrarEncabezado("SELECCIONE UNA PELICULA PARA COMPRAR");
-        for (int i = 0; i < total_peliculas; i++)
-        {
-            if (catalogo[i].activo)
-            {
-                indices_activos[peliculas_activas] = i;
-                peliculas_activas++;
-            }
-        }
-        MostrarPeliculasActivas(catalogo, total_peliculas);
+        int activas = MostrarPeliculasActivas(catalogo, total_peliculas);
 
-        printf("0) Volver al menu\n");
-        int opcion = leerEnteroEntre(0, peliculas_activas, "\n > Seleccione el numero de la pelicula: ");
-        if (opcion != 0)
+        if (activas > 0)
         {
-            int indice = indices_activos[opcion - 1];
-            actualizar_interfaz(catalogo[indice].asientos, catalogo[indice].asientos_libres);
-            procesar_compra(catalogo[indice].asientos, &catalogo[indice].asientos_libres, &catalogo[indice]);
+            printf("0) Volver al menu\n");
+            int opcion = leerEnteroEntre(0, activas, "\n > Seleccione el numero de la pelicula: ");
+
+            if (opcion != 0)
+            {
+                int indice = ObtenerIndiceReal(catalogo, total_peliculas, opcion);
+
+                if (indice != -1)
+                {
+                    printf("\n--- COMPRANDO ENTRADAS PARA: '%s' ---\n", catalogo[indice].titulo);
+                    actualizar_interfaz(catalogo[indice].asientos, catalogo[indice].asientos_libres);
+                    procesar_compra(catalogo[indice].asientos, &catalogo[indice].asientos_libres, &catalogo[indice]);
+                }
+            }
         }
     }
 }
@@ -795,22 +784,15 @@ void mostrar_ticket(Pelicula *pelicula, int asientos_sesion[], int total_comprad
     getchar();
 }
 
-// Preacrgado de datos void cargarDatosPrueba(Pelicula catalogo[], int *total_peliculas)
 void cargarDatosPrueba(Pelicula catalogo[], int *total_peliculas)
 {
-    // Verificamos que haya espacio al menos para 13 películas (3 orig. + 4 nuevas + 6 Terminators)
+
     if (*total_peliculas + 13 > MAX_PELICULAS)
     {
         printf("\n [ERROR] No hay suficiente espacio en el catalogo para cargar los datos de prueba.\n");
         return;
     }
 
-    // ==========================================
-    // PELÍCULAS ORIGINALES
-    // ==========================================
-
-    // --- PELICULA 1 ---
-    catalogo[*total_peliculas].id = 1;
     strcpy(catalogo[*total_peliculas].titulo, "Batman: El Caballero de la Noche");
     catalogo[*total_peliculas].duracion.hora = 2;
     catalogo[*total_peliculas].duracion.minutos = 32;
@@ -823,7 +805,6 @@ void cargarDatosPrueba(Pelicula catalogo[], int *total_peliculas)
     (*total_peliculas)++;
 
     // --- PELICULA 2 ---
-    catalogo[*total_peliculas].id = 2;
     strcpy(catalogo[*total_peliculas].titulo, "Interstellar");
     catalogo[*total_peliculas].duracion.hora = 2;
     catalogo[*total_peliculas].duracion.minutos = 49;
@@ -836,7 +817,6 @@ void cargarDatosPrueba(Pelicula catalogo[], int *total_peliculas)
     (*total_peliculas)++;
 
     // --- PELICULA 3 ---
-    catalogo[*total_peliculas].id = 3;
     strcpy(catalogo[*total_peliculas].titulo, "Shrek 2");
     catalogo[*total_peliculas].duracion.hora = 1;
     catalogo[*total_peliculas].duracion.minutos = 33;
@@ -853,7 +833,6 @@ void cargarDatosPrueba(Pelicula catalogo[], int *total_peliculas)
     // ==========================================
 
     // --- PELICULA 4 ---
-    catalogo[*total_peliculas].id = 4;
     strcpy(catalogo[*total_peliculas].titulo, "Boku no Hero Academia: Two Heroes");
     catalogo[*total_peliculas].duracion.hora = 1;
     catalogo[*total_peliculas].duracion.minutos = 36;
@@ -866,7 +845,6 @@ void cargarDatosPrueba(Pelicula catalogo[], int *total_peliculas)
     (*total_peliculas)++;
 
     // --- PELICULA 5 ---
-    catalogo[*total_peliculas].id = 5;
     strcpy(catalogo[*total_peliculas].titulo, "The Matrix");
     catalogo[*total_peliculas].duracion.hora = 2;
     catalogo[*total_peliculas].duracion.minutos = 16;
@@ -879,7 +857,6 @@ void cargarDatosPrueba(Pelicula catalogo[], int *total_peliculas)
     (*total_peliculas)++;
 
     // --- PELICULA 6 ---
-    catalogo[*total_peliculas].id = 6;
     strcpy(catalogo[*total_peliculas].titulo, "El Señor de los Anillos: El Retorno del Rey");
     catalogo[*total_peliculas].duracion.hora = 3;
     catalogo[*total_peliculas].duracion.minutos = 21;
@@ -892,7 +869,6 @@ void cargarDatosPrueba(Pelicula catalogo[], int *total_peliculas)
     (*total_peliculas)++;
 
     // --- PELICULA 7 ---
-    catalogo[*total_peliculas].id = 7;
     strcpy(catalogo[*total_peliculas].titulo, "Gladiador");
     catalogo[*total_peliculas].duracion.hora = 2;
     catalogo[*total_peliculas].duracion.minutos = 35;
@@ -909,7 +885,6 @@ void cargarDatosPrueba(Pelicula catalogo[], int *total_peliculas)
     // ==========================================
 
     // --- PELICULA 8 ---
-    catalogo[*total_peliculas].id = 8;
     strcpy(catalogo[*total_peliculas].titulo, "Terminator");
     catalogo[*total_peliculas].duracion.hora = 1;
     catalogo[*total_peliculas].duracion.minutos = 47;
@@ -922,7 +897,6 @@ void cargarDatosPrueba(Pelicula catalogo[], int *total_peliculas)
     (*total_peliculas)++;
 
     // --- PELICULA 9 ---
-    catalogo[*total_peliculas].id = 9;
     strcpy(catalogo[*total_peliculas].titulo, "Terminator 2: El Juicio Final");
     catalogo[*total_peliculas].duracion.hora = 2;
     catalogo[*total_peliculas].duracion.minutos = 17;
@@ -935,7 +909,6 @@ void cargarDatosPrueba(Pelicula catalogo[], int *total_peliculas)
     (*total_peliculas)++;
 
     // --- PELICULA 10 ---
-    catalogo[*total_peliculas].id = 10;
     strcpy(catalogo[*total_peliculas].titulo, "Terminator 3: La Rebelion de las Maquinas");
     catalogo[*total_peliculas].duracion.hora = 1;
     catalogo[*total_peliculas].duracion.minutos = 49;
@@ -948,7 +921,6 @@ void cargarDatosPrueba(Pelicula catalogo[], int *total_peliculas)
     (*total_peliculas)++;
 
     // --- PELICULA 11 ---
-    catalogo[*total_peliculas].id = 11;
     strcpy(catalogo[*total_peliculas].titulo, "Terminator: La Salvacion");
     catalogo[*total_peliculas].duracion.hora = 1;
     catalogo[*total_peliculas].duracion.minutos = 55;
@@ -961,7 +933,6 @@ void cargarDatosPrueba(Pelicula catalogo[], int *total_peliculas)
     (*total_peliculas)++;
 
     // --- PELICULA 12 ---
-    catalogo[*total_peliculas].id = 12;
     strcpy(catalogo[*total_peliculas].titulo, "Terminator: Genesis");
     catalogo[*total_peliculas].duracion.hora = 2;
     catalogo[*total_peliculas].duracion.minutos = 6;
@@ -974,7 +945,6 @@ void cargarDatosPrueba(Pelicula catalogo[], int *total_peliculas)
     (*total_peliculas)++;
 
     // --- PELICULA 13 ---
-    catalogo[*total_peliculas].id = 13;
     strcpy(catalogo[*total_peliculas].titulo, "Terminator: Destino Oculto");
     catalogo[*total_peliculas].duracion.hora = 2;
     catalogo[*total_peliculas].duracion.minutos = 8;
@@ -985,22 +955,6 @@ void cargarDatosPrueba(Pelicula catalogo[], int *total_peliculas)
     inicializar_sala(catalogo[*total_peliculas].asientos, TOTAL_ASIENTOS);
     catalogo[*total_peliculas].asientos_libres = TOTAL_ASIENTOS;
     (*total_peliculas)++;
-}
-
-// Nuevas funcion
-int BuscarIndicePeliculaPorID(Pelicula catalogo[], int total_peliculas, int id_buscar)
-{
-    int posicion = -1;
-    int i = 0;
-
-    while (i < total_peliculas && posicion == -1)
-    {
-        if (catalogo[i].activo && catalogo[i].id == id_buscar)
-            posicion = i;
-        i++;
-    }
-
-    return posicion;
 }
 
 void listarPeliculasPrincipio(Pelicula catalogo[], int total_peliculas)
@@ -1044,4 +998,25 @@ float calcular_precio_asiento(int numero_asiento)
         precio_calculado = PRECIO_GENERAL;
     }
     return precio_calculado;
+}
+int ObtenerIndiceReal(Pelicula catalogo[], int total_peliculas, int opcion_visual)
+{
+    int posicion = -1;
+    int contador = 0;
+    int i = 0;
+
+    // Recorre el arreglo mientras no termine y no haya encontrado la posicion
+    while (i < total_peliculas && posicion == -1)
+    {
+        if (catalogo[i].activo)
+        {
+            contador++; // Cuenta solo las activas
+            if (contador == opcion_visual)
+            {
+                posicion = i; // Guarda el índice real del vector
+            }
+        }
+        i++;
+    }
+    return posicion;
 }
