@@ -3,8 +3,9 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <string.h>
-#include <unistd.h>
-
+#ifdef _WIN32
+#include <windows.h>
+#endif
 typedef char cadena[150];
 
 ////////////////////////////  PROTOTIPOS  /////////////////////////////////
@@ -269,7 +270,7 @@ void LimpiarBuffer()
 void PantallaDeEspera(cadena mensaje)
 {
     printf(" %s", mensaje);
-    sleep(4);
+    Sleep(3000);
     limpiarPantalla();
 }
 
@@ -288,12 +289,22 @@ void imprimirSeparador()
 void leerCadena(cadena mensaje, cadena destino, int longitudMaxima)
 {
     printf("%s", mensaje);
-    fgets(destino, longitudMaxima, stdin);
-    if (strcmp(destino, "\n") == 0)
+    if (fgets(destino, longitudMaxima, stdin) != NULL)
     {
-        fgets(destino, longitudMaxima, stdin);
+        size_t longitud = strlen(destino);
+        if (longitud > 0 && destino[longitud - 1] == '\n')
+        {
+            destino[longitud - 1] = '\0';
+        }
+        else
+        {
+            LimpiarBuffer();
+        }
     }
-    destino[strcspn(destino, "\n")] = '\0';
+    else
+    {
+        destino[0] = '\0';
+    }
 }
 
 void pausar()
