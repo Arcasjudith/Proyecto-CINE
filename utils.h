@@ -9,7 +9,6 @@
 typedef char cadena[150];
 
 ////////////////////////////  PROTOTIPOS  /////////////////////////////////
-void vaciar_buffer_teclado(void);
 int leerEntero(cadena mensaje);
 float leerFloat(cadena mensaje);
 char leerCaracter(cadena mensaje);
@@ -19,27 +18,13 @@ bool confirmaUsuario(cadena mensaje);
 float calcularPromedio(float sumaTotal, int cantidadElementos);
 float aplicarPorcentaje(float valorTotal, float porcentaje);
 float calcularPorcentaje(int cantidad, int cantidadTotal);
-void limpiarPantalla();
-bool esPar(int numero);
-bool esVocal(char letra);
-void imprimirSeparador();
-char aMayuscula(char letra);
-void imprimirCaracteres(char caracter, int cantidad);
-int obtenerMayor(int num1, int num2);
-int obtenerMenor(int num1, int num2);
-int generarAleatorio(int min, int max);
-bool esPrimo(int numero);
-bool esMultiplo(int numero, int divisor);
-int obtenerResto(int dividendo, int divisor);
-int cantidadDivisores(int numero);
-bool esPerfecto(int numero);
 void LimpiarBuffer();
 void PantallaDeEspera(cadena mensaje);
 void MostrarHorarioFormateado(int horario);
 void leerCadena(cadena mensaje, cadena destino, int longitudMaxima);
 void pausar();
 
-// Preguntar si esta bien usar esto
+
 int leerEntero(cadena mensaje)
 {
     int numero;
@@ -68,7 +53,7 @@ int leerEnteroEntre(int valorMin, int valorMax, cadena mensaje)
     printf("%s: ", mensaje);
     valido = scanf("%d", &numero);
 
-    while ((numero <= valorMin || numero >= valorMax) && valido == 1)
+    while ((numero < valorMin || numero > valorMax) && valido == 1)
     {
         printf("Error. El numero ingresado esta fuera de rango (%d a %d).\n", valorMin, valorMax);
         printf("Vuelve a intentarlo.\n");
@@ -147,109 +132,6 @@ void limpiarPantalla()
     system("cls");
 }
 
-bool esPar(int numero)
-{
-    return (numero % 2 == 0);
-}
-
-bool esVocal(char letra)
-{
-    letra = tolower(letra);
-    return (letra == 'a' || letra == 'e' || letra == 'i' || letra == 'o' || letra == 'u');
-}
-
-char aMayuscula(char letra)
-{
-    return toupper(letra);
-}
-
-void imprimirCaracteres(char caracter, int cantidad)
-{
-    for (int i = 0; i < cantidad; i++)
-    {
-        printf("%c", caracter);
-    }
-}
-
-int obtenerMayor(int num1, int num2)
-{
-    int mayor;
-    if (num1 > num2)
-    {
-        mayor = num1;
-    }
-    else
-        mayor = num2;
-    return mayor;
-}
-
-int obtenerMenor(int num1, int num2)
-{
-    int menor;
-    if (num1 < num2)
-    {
-        menor = num1;
-    }
-    else
-        menor = num2;
-    return menor;
-}
-
-int generarAleatorio(int min, int max)
-{
-    return rand() % (max - min + 1) + min;
-}
-
-bool esPrimo(int numero)
-{
-    if (numero <= 1)
-        return false;
-    for (int i = 2; i * i <= numero; i++)
-    {
-        if (numero % i == 0)
-            return false;
-    }
-    return true;
-}
-
-bool esMultiplo(int numero, int divisor)
-{
-    if (divisor == 0)
-        return false;
-    return (numero % divisor == 0);
-}
-
-int obtenerResto(int dividendo, int divisor)
-{
-    return dividendo % divisor;
-}
-
-int cantidadDivisores(int numero)
-{
-    int contador = 0;
-    for (int i = 1; i <= numero; i++)
-    {
-        if (numero % i == 0)
-        {
-            contador++;
-        }
-    }
-    return contador;
-}
-
-bool esPerfecto(int numero)
-{
-    if (numero <= 0)
-        return false;
-    int suma = 0;
-    for (int i = 1; i <= numero / 2; i++)
-    {
-        if (numero % i == 0)
-            suma += i;
-    }
-    return suma == numero;
-}
-
 void LimpiarBuffer()
 {
     int c;
@@ -260,20 +142,7 @@ void LimpiarBuffer()
 void PantallaDeEspera(cadena mensaje)
 {
     printf(" %s", mensaje);
-    Sleep(3000);
     limpiarPantalla();
-}
-
-void MostrarHorarioFormateado(int horario)
-{
-    int horas = horario / 100;
-    int minutos = horario % 100;
-    printf("Horario: %02d:%02d hs", horas, minutos);
-}
-
-void imprimirSeparador()
-{
-    printf("\n=======================================================\n");
 }
 
 void leerCadena(cadena mensaje, cadena destino, int longitudMaxima)

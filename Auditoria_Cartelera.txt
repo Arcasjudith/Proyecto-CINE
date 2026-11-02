@@ -1,0 +1,18 @@
+=======================================================
+           REPORTE DE AUDITORIA - CINE MILAGRO         
+=======================================================
+
+> PELICULAS ACTIVAS EN CARTELERA <
+1. Terminator 2 : El juicio final (Horario: 00:15 hs) - Asientos libres: 50
+2. Terminator: Destino oculto (Horario: 01:00 hs) - Asientos libres: 50
+3. terminator Genesis (Horario: 10:00 hs) - Asientos libres: 50
+4. Terminator (Horario: 16:30 hs) - Asientos libres: 50
+5. Terminator 3: La rebelion de las maquinas (Horario: 17:00 hs) - Asientos libres: 50
+6. Terminator: La salvacion (Horario: 19:00 hs) - Asientos libres: 50
+
+-------------------------------------------------------
+
+> HISTORIAL DE PELICULAS INACTIVAS <
+
+=======================================================
+Total en memoria: 6
