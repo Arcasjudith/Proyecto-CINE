@@ -64,28 +64,18 @@ int leerEntero(cadena mensaje)
 int leerEnteroEntre(int valorMin, int valorMax, cadena mensaje)
 {
     int numero;
-    int validacion;
+    int valido = 0;
+    printf("%s: ", mensaje);
+    valido = scanf("%d", &numero);
 
-    do
+    while ((numero <= valorMin || numero >= valorMax) && valido == 1)
     {
+        printf("Error. El numero ingresado esta fuera de rango (%d a %d).\n", valorMin, valorMax);
+        printf("Vuelve a intentarlo.\n");
         printf("%s: ", mensaje);
-        validacion = scanf("%d", &numero);
-
-        if (validacion != 1)
-        {
-            printf("Error: Entrada invalida. Por favor, ingrese un numero.\n");
-            LimpiarBuffer(); // Limpia la basura ingresada
-        }
-        else if (numero < valorMin || numero > valorMax)
-        {
-            printf("Error. El numero ingresado esta fuera de rango (%d a %d).\n", valorMin, valorMax);
-            printf("Vuelve a intentarlo.\n");
-        }
-
-    } while (validacion != 1 || numero < valorMin || numero > valorMax);
-
-    LimpiarBuffer(); // Limpia el '\n' residual
-
+        scanf("%d", &numero);
+        LimpiarBuffer();
+    }
     return numero;
 }
 

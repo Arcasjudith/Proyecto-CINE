@@ -158,8 +158,8 @@ int main()
 void leerHorarioFormato(cadena mensaje, int *hora, int *minutos, int m)
 {
     printf("%s", mensaje);
-    *hora = leerEnteroEntre(0, m, "Ingrese la hora (0-23): ");
-    *minutos = leerEnteroEntre(0, MINUTOS, "Ingrese los minutos (0-59): ");
+    *hora = leerEnteroEntre(0, m, "\nIngrese la hora : ");
+    *minutos = leerEnteroEntre(0, MINUTOS, "\nIngrese los minutos : ");
     LimpiarBuffer();
 }
 
@@ -317,9 +317,9 @@ Pelicula leerpelicula()
     Pelicula catalogo;
     printf("\n--- AGREGAR NUEVA PELICULA ---\n");
     leerCadena("Titulo de la pelicula: ", catalogo.titulo, MAX_NOMBRE);
-    leerHorarioFormato(" Duracion (HH:MM): ", &catalogo.duracion.hora, &catalogo.duracion.minutos, MAX_HORA_PELICULA);
     leerCadena("Genero: ", catalogo.genero, MAX_GENERO);
-    leerHorarioFormato("Hora de la funcion (HH:MM): ", &catalogo.horario.hora, &catalogo.horario.minutos, HORAS_DIA);
+    leerHorarioFormato(" Duracion (1 a 3) ", &catalogo.duracion.hora, &catalogo.duracion.minutos, MAX_HORA_PELICULA);
+    leerHorarioFormato("Hora de la funcion (00:23) ", &catalogo.horario.hora, &catalogo.horario.minutos, HORAS_DIA);
     catalogo.activo = true;
 
     inicializar_sala(catalogo.asientos, TOTAL_ASIENTOS);
